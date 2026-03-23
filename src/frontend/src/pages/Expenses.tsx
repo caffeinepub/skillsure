@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, X } from "lucide-react";
+import { Eye, EyeOff, Lock, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { AppState, Expense } from "../types";
@@ -67,25 +67,20 @@ const CATEGORIES: Expense["category"][] = [
 
 export function Expenses({ state, onStateChange }: ExpensesProps) {
   const [showForm, setShowForm] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Expense["category"]>("Food");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
   const expenses = state.expenses;
-
-  // Current month total
   const totalThisMonth = expenses.reduce((sum, e) => sum + e.amount, 0);
-
-  // Category totals
   const categoryTotals = CATEGORIES.map((cat) => ({
     cat,
     total: expenses
       .filter((e) => e.category === cat)
       .reduce((s, e) => s + e.amount, 0),
   }));
-
-  // Sorted expenses
   const sorted = [...expenses].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
@@ -116,7 +111,7 @@ export function Expenses({ state, onStateChange }: ExpensesProps) {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Expense Tracker
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
@@ -133,7 +128,7 @@ export function Expenses({ state, onStateChange }: ExpensesProps) {
         </Button>
       </div>
 
-      {/* Inline Add Form */}
+      {/* Add Expense Form (always accessible) */}
       {showForm && (
         <Card
           data-ocid="expenses.dialog"
@@ -216,10 +211,12 @@ export function Expenses({ state, onStateChange }: ExpensesProps) {
         </Card>
       )}
 
-      {/* Summary Row */}
+      {/* Summary Row — always visible */}
       <div
-        className="rounded-2xl p-5 text-white relative overflow-hidden"
-        style={{ background: "#0B6B6E" }}
+        className="rounded-2xl p-5 text-white relative overflow-hidden shadow-card"
+        style={{
+          background: "linear-gradient(135deg, #0B6B6E 0%, #0891b2 100%)",
+        }}
       >
         <div
           className="absolute inset-0 opacity-10"
@@ -248,76 +245,140 @@ export function Expenses({ state, onStateChange }: ExpensesProps) {
         </div>
       </div>
 
-      {/* Category Breakdown */}
-      <div>
-        <h2 className="text-base font-semibold text-foreground mb-3">
-          Category Breakdown
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {categoryTotals.map(({ cat, total }) => {
-            const meta = CATEGORY_META[cat];
-            return (
-              <div
-                key={cat}
-                className={`rounded-xl p-4 border text-center ${meta.bg}`}
-              >
-                <div className="text-2xl mb-1">{meta.icon}</div>
-                <p className={`text-xs font-semibold ${meta.color}`}>{cat}</p>
-                <p className="text-sm font-bold text-foreground mt-0.5">
-                  ₹{total.toLocaleString("en-IN")}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Recent Expenses */}
-      <Card className="shadow-card border-border">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold">
-            Recent Expenses
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {sorted.length === 0 ? (
-            <p
-              data-ocid="expenses.empty_state"
-              className="text-center text-muted-foreground text-sm py-8"
-            >
-              No expenses yet. Click "Add Expense" to get started.
-            </p>
-          ) : (
-            sorted.map((exp, idx) => {
-              const meta = CATEGORY_META[exp.category];
-              return (
+      {/* Privacy-locked details */}
+      {!isRevealed ? (
+        <div className="relative">
+          {/* Blurred preview */}
+          <div className="blur-sm pointer-events-none select-none opacity-40 space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {CATEGORIES.map((cat) => (
                 <div
-                  key={exp.id}
-                  data-ocid={`expenses.item.${idx + 1}`}
-                  className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
-                >
+                  key={cat}
+                  className="rounded-xl p-4 border bg-muted h-20"
+                />
+              ))}
+            </div>
+            <Card>
+              <CardContent className="p-4 space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-10 bg-muted rounded-lg" />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+          {/* Lock overlay */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/80 backdrop-blur-md rounded-2xl border border-border shadow-card">
+            <div className="flex flex-col items-center gap-3 text-center px-6">
+              <div className="w-16 h-16 rounded-full bg-teal-50 border-2 border-teal-200 flex items-center justify-center">
+                <Lock size={28} className="text-teal-600" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">
+                Expense details are private
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Only you can see your spending breakdown. Tap to reveal.
+              </p>
+              <Button
+                data-ocid="expenses.primary_button"
+                onClick={() => setIsRevealed(true)}
+                className="bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-2 mt-1"
+              >
+                <Eye size={16} />
+                View My Expenses
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Lock again button */}
+          <div className="flex justify-end">
+            <Button
+              data-ocid="expenses.toggle"
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsRevealed(false)}
+              className="text-muted-foreground text-xs flex items-center gap-1"
+            >
+              <EyeOff size={13} />
+              Lock Again
+            </Button>
+          </div>
+
+          {/* Category Breakdown */}
+          <div>
+            <h2 className="text-base font-semibold text-foreground mb-3">
+              Category Breakdown
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {categoryTotals.map(({ cat, total }) => {
+                const meta = CATEGORY_META[cat];
+                return (
                   <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg border ${meta.bg}`}
+                    key={cat}
+                    className={`rounded-xl p-4 border text-center ${meta.bg} hover:shadow-card transition-all`}
                   >
-                    {meta.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">
-                      {exp.description}
+                    <div className="text-2xl mb-1">{meta.icon}</div>
+                    <p className={`text-xs font-semibold ${meta.color}`}>
+                      {cat}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {exp.date} · {exp.category}
+                    <p className="text-sm font-bold text-foreground mt-0.5">
+                      ₹{total.toLocaleString("en-IN")}
                     </p>
                   </div>
-                  <p className="text-sm font-bold text-foreground">
-                    ₹{exp.amount.toLocaleString("en-IN")}
-                  </p>
-                </div>
-              );
-            })
-          )}
-        </CardContent>
-      </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Recent Expenses */}
+          <Card className="shadow-card border-border">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold">
+                Recent Expenses
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {sorted.length === 0 ? (
+                <p
+                  data-ocid="expenses.empty_state"
+                  className="text-center text-muted-foreground text-sm py-8"
+                >
+                  No expenses yet. Click "Add Expense" to get started.
+                </p>
+              ) : (
+                sorted.map((exp, idx) => {
+                  const meta = CATEGORY_META[exp.category];
+                  return (
+                    <div
+                      key={exp.id}
+                      data-ocid={`expenses.item.${idx + 1}`}
+                      className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg border ${meta.bg}`}
+                      >
+                        {meta.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground">
+                          {exp.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {exp.date} · {exp.category}
+                        </p>
+                      </div>
+                      <p className="text-sm font-bold text-foreground">
+                        ₹{exp.amount.toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                  );
+                })
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,7 +4,10 @@ export type Page =
   | "rewards"
   | "profile"
   | "expenses"
-  | "apply";
+  | "apply"
+  | "savings"
+  | "creditcard"
+  | "contact";
 
 export interface EMI {
   id: string;
@@ -62,6 +65,39 @@ export interface LoanApplication {
   status: "pending" | "approved" | "reviewing";
 }
 
+export interface SavingsAccount {
+  id: string;
+  name: string;
+  balance: number;
+  goal: number;
+  monthlyContribution: number;
+  icon: string;
+  color: string;
+  linkedLoanId?: string;
+}
+
+export interface CreditTransaction {
+  id: string;
+  date: string;
+  merchant: string;
+  amount: number;
+  category: string;
+  icon: string;
+  type: "debit" | "credit";
+}
+
+export interface CreditCardData {
+  cardNumber: string;
+  cardHolder: string;
+  expiryDate: string;
+  creditLimit: number;
+  outstanding: number;
+  availableCredit: number;
+  dueDate: string;
+  transactions: CreditTransaction[];
+  rewards: number;
+}
+
 export interface AppState {
   points: number;
   streak: number;
@@ -71,4 +107,6 @@ export interface AppState {
   emis: EMI[];
   expenses: Expense[];
   loanApplications: LoanApplication[];
+  savings: SavingsAccount[];
+  creditCard: CreditCardData;
 }

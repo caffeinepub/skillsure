@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Quote } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getMultiplier, redemptionOptions } from "../data/initialData";
@@ -29,6 +30,37 @@ const TIPS = [
     title: "Invest in Skills 💡",
     body: "SkillSure loans are for education and career growth only. We help you invest in your future — not cars or homes.",
     gradient: "from-amber-400 to-orange-400",
+  },
+];
+
+const QUOTES = [
+  {
+    id: "q1",
+    text: "Learn now. Pay when you grow.",
+    accent: "border-teal-500",
+    bg: "bg-teal-50",
+    color: "text-teal-700",
+  },
+  {
+    id: "q2",
+    text: "Data privacy matters more than money.",
+    accent: "border-purple-500",
+    bg: "bg-purple-50",
+    color: "text-purple-700",
+  },
+  {
+    id: "q3",
+    text: "Your skills are your greatest asset.",
+    accent: "border-pink-500",
+    bg: "bg-pink-50",
+    color: "text-pink-700",
+  },
+  {
+    id: "q4",
+    text: "Financial discipline today, freedom tomorrow.",
+    accent: "border-amber-500",
+    bg: "bg-amber-50",
+    color: "text-amber-700",
   },
 ];
 
@@ -121,7 +153,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
     <div className="animate-fade-in space-y-6">
       {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Welcome back, Maya! 👋
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -135,8 +167,11 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
         <div className="space-y-4">
           {/* EMI Progress Hero Card */}
           <div
-            className="rounded-2xl p-6 text-white relative overflow-hidden"
-            style={{ background: "#0B6B6E" }}
+            className="rounded-2xl p-6 text-white relative overflow-hidden shadow-card"
+            style={{
+              background:
+                "linear-gradient(135deg, #0B6B6E 0%, #0891b2 60%, #0e7490 100%)",
+            }}
           >
             <div
               className="absolute inset-0 opacity-10"
@@ -155,7 +190,6 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
                   /month
                 </span>
               </p>
-
               <div className="mt-5 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-teal-100">Overall Progress</span>
@@ -168,7 +202,6 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
                   />
                 </div>
               </div>
-
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Badge className="bg-teal-700 text-teal-100 border-teal-600 text-xs">
                   3 payments remaining
@@ -184,7 +217,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
           </div>
 
           {/* Upcoming EMIs */}
-          <Card className="shadow-card border-border">
+          <Card className="shadow-card border-border hover:shadow-card-hover transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">
                 Upcoming EMIs
@@ -234,7 +267,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
           </Card>
 
           {/* Recent Payments */}
-          <Card className="shadow-card border-border">
+          <Card className="shadow-card border-border hover:shadow-card-hover transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">
                 Recent Payments
@@ -298,8 +331,6 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
                 <p className="text-white/70 text-xs mt-1">
                   +500 points this month!
                 </p>
-
-                {/* Streak */}
                 <div className="mt-5 flex items-center gap-3">
                   <div className="bg-white/20 rounded-xl px-3 py-2">
                     <p className="text-white font-bold text-sm">
@@ -310,21 +341,15 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
                     </p>
                   </div>
                 </div>
-
-                {/* Streak dots */}
                 <div className="mt-4 flex items-center gap-1.5">
                   {streakDots.map((dot) => (
                     <div
                       key={dot.key}
-                      className={`h-2.5 flex-1 rounded-full transition-all ${
-                        dot.filled ? "bg-white" : "bg-white/25"
-                      }`}
+                      className={`h-2.5 flex-1 rounded-full transition-all ${dot.filled ? "bg-white" : "bg-white/25"}`}
                     />
                   ))}
                   <span className="text-base ml-1">🔥</span>
                 </div>
-
-                {/* Progress to next multiplier */}
                 <div className="mt-4">
                   <div className="flex justify-between text-xs text-white/70 mb-1">
                     <span>Bonus Progression → {nextMultiplier}x</span>
@@ -352,7 +377,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
           </div>
 
           {/* Reward Redemption */}
-          <Card className="shadow-card border-border">
+          <Card className="shadow-card border-border hover:shadow-card-hover transition-all">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-semibold">
@@ -391,7 +416,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
           </Card>
 
           {/* Points Activity */}
-          <Card className="shadow-card border-border">
+          <Card className="shadow-card border-border hover:shadow-card-hover transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">
                 Points Activity
@@ -411,9 +436,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
                     <p className="text-xs text-muted-foreground">{a.date}</p>
                   </div>
                   <span
-                    className={`text-sm font-bold ${
-                      a.type === "earned" ? "text-emerald-500" : "text-red-500"
-                    }`}
+                    className={`text-sm font-bold ${a.type === "earned" ? "text-emerald-500" : "text-red-500"}`}
                   >
                     {a.type === "earned" ? "+" : "-"}
                     {a.points.toLocaleString()} pts
@@ -434,7 +457,7 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
           {TIPS.map((tip) => (
             <div
               key={tip.id}
-              className="rounded-2xl overflow-hidden shadow-card border border-border"
+              className="rounded-2xl overflow-hidden shadow-card border border-border hover:shadow-card-hover hover:-translate-y-0.5 transition-all"
             >
               <div
                 className={`h-20 bg-gradient-to-br ${tip.gradient} flex items-center px-5`}
@@ -450,6 +473,82 @@ export function Dashboard({ state, onStateChange }: DashboardProps) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Quotes Section */}
+      <div>
+        <h2 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Quote size={16} className="text-teal-600" />
+          Words to Live By
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {QUOTES.map((q) => (
+            <div
+              key={q.id}
+              className={`rounded-xl p-5 border-l-4 ${q.accent} ${q.bg} hover:shadow-card hover:-translate-y-0.5 transition-all`}
+            >
+              <Quote size={20} className={`${q.color} mb-2 opacity-60`} />
+              <p className={`text-base font-semibold ${q.color} leading-snug`}>
+                {q.text}
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">— SkillSure</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mission & Vision */}
+      <div>
+        <h2 className="text-base font-semibold text-foreground mb-3">
+          Our Purpose
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div
+            className="rounded-2xl p-6 text-white relative overflow-hidden shadow-card"
+            style={{
+              background: "linear-gradient(135deg, #0B6B6E 0%, #0891b2 100%)",
+            }}
+          >
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                background:
+                  "radial-gradient(circle at 80% 20%, white 0%, transparent 60%)",
+              }}
+            />
+            <div className="relative">
+              <div className="text-3xl mb-3">🎯</div>
+              <h3 className="text-lg font-bold mb-2">Our Mission</h3>
+              <p className="text-teal-100 text-sm leading-relaxed">
+                Democratizing skill education through income-linked financing
+                and gamified financial discipline.
+              </p>
+            </div>
+          </div>
+          <div
+            className="rounded-2xl p-6 text-white relative overflow-hidden shadow-card"
+            style={{
+              background:
+                "linear-gradient(135deg, #4c1d95 0%, #7c3aed 60%, #9333ea 100%)",
+            }}
+          >
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                background:
+                  "radial-gradient(circle at 80% 20%, white 0%, transparent 60%)",
+              }}
+            />
+            <div className="relative">
+              <div className="text-3xl mb-3">🌟</div>
+              <h3 className="text-lg font-bold mb-2">Our Vision</h3>
+              <p className="text-purple-100 text-sm leading-relaxed">
+                To build India's most trusted pay-as-you-grow education
+                ecosystem.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
